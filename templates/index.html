@@ -1,0 +1,98 @@
+{% extends "base.html" %} {% block content %}
+<div class="form-container">
+  <form method="POST" class="input-form">
+    <div class="form-group">
+      <label for="arrival">Laju Kedatangan (λ) - kedatangan per menit:</label>
+      <input
+        type="number"
+        id="arrival"
+        name="arrival"
+        step="0.01"
+        required
+        placeholder="Contoh: 5"
+        min="0.01"
+        max="100"
+      />
+      <small class="form-text"
+        >Masukkan angka positif untuk laju kedatangan pelanggan</small
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="service">Laju Layanan (μ) - pelayanan per menit:</label>
+      <input
+        type="number"
+        id="service"
+        name="service"
+        step="0.01"
+        required
+        placeholder="Contoh: 6"
+        min="0.01"
+        max="100"
+      />
+      <small class="form-text"
+        >Masukkan angka positif untuk laju layanan per server</small
+      >
+    </div>
+
+    <div class="button-group">
+      <button type="submit" class="btn btn-primary">Hitung Hasil</button>
+      <button type="reset" class="btn btn-secondary">Reset</button>
+    </div>
+  </form>
+</div>
+
+<div class="info-box">
+  <h3>ℹ️ Informasi Model M/M/2</h3>
+  <p>
+    Model <strong>M/M/2</strong> (atau M/M/c/K dengan c=2, K=∞) merupakan model
+    antrian dengan karakteristik:
+  </p>
+  <ul>
+    <li><strong>M (pertama):</strong> Kedatangan Poisson (Markovian)</li>
+    <li><strong>M (kedua):</strong> Layanan Eksponensial</li>
+    <li><strong>2:</strong> Dua server/pelayan yang identik dan independen</li>
+    <li><strong>∞:</strong> Kapasitas antrian tidak terbatas</li>
+  </ul>
+  <p><strong>Syarat Stabilitas:</strong> ρ = λ/(2μ) &lt; 1</p>
+</div>
+
+<div class="formulas-box">
+  <h3>📐 Rumus-Rumus yang Digunakan</h3>
+
+  <div class="formula-item">
+    <p><strong>Tingkat Utilisasi (Utilization):</strong></p>
+    <p>$$\rho = \frac{\lambda}{2\mu}$$</p>
+  </div>
+
+  <div class="formula-item">
+    <p><strong>Waktu di Sistem (W):</strong></p>
+    <p>$$W = \frac{1}{\mu - \frac{\lambda}{2}}$$</p>
+  </div>
+
+  <div class="formula-item">
+    <p><strong>Waktu dalam Antrian (Wq):</strong></p>
+    <p>$$W_q = \frac{\lambda}{2\mu(\mu - \frac{\lambda}{2})}$$</p>
+  </div>
+
+  <div class="formula-item">
+    <p><strong>Jumlah Pelanggan di Sistem (L):</strong></p>
+    <p>$$L = \lambda \cdot W$$</p>
+  </div>
+
+  <div class="formula-item">
+    <p><strong>Jumlah Pelanggan dalam Antrian (Lq):</strong></p>
+    <p>$$L_q = \lambda \cdot W_q$$</p>
+  </div>
+</div>
+
+<div class="notes-box">
+  <h3>📝 Catatan Penting</h3>
+  <ul>
+    <li>Pastikan nilai λ &lt; 2μ untuk sistem yang stabil</li>
+    <li>Semua nilai harus positif dan lebih besar dari 0</li>
+    <li>Perhitungan menggunakan model steady-state</li>
+    <li>Kedua server dianggap memiliki kapasitas layanan yang sama</li>
+  </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,463 @@
+{% extends "base.html" %} {% block content %}
+<div class="result-container">
+  <!-- Input Summary -->
+  <div class="input-summary">
+    <h2>📊 Ringkasan Input</h2>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <span class="label">Waktu antar kedatangan (1/λ):</span>
+        <span class="value">{{ "%.4f"|format(arrival) }} menit</span>
+      </div>
+      <div class="summary-item">
+        <span class="label">Waktu pelayanan per server (1/μ):</span>
+        <span class="value">{{ "%.4f"|format(service) }} menit</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LANGKAH-LANGKAH PERHITUNGAN -->
+  <div class="steps-container">
+    <h2>📋 Langkah Pengerjaan Manual</h2>
+
+    <!-- Langkah 1 -->
+    <div class="step-card">
+      <div class="step-header">
+        <h3>Langkah 1: Hitung Laju Kedatangan (λ)</h3>
+      </div>
+      <div class="step-content">
+        <p class="step-formula">λ = 1 / waktu antar kedatangan</p>
+        <p class="step-calculation">λ = 1 / {{ "%.4f"|format(arrival) }}</p>
+        <p class="step-result">
+          <strong>λ = {{ "%.6f"|format(r["lambda"]) }} pelanggan/menit</strong>
+        </p>
+      </div>
+    </div>
+
+    <!-- Langkah 2 -->
+    <div class="step-card">
+      <div class="step-header">
+        <h3>Langkah 2: Hitung Laju Pelayanan per Pelayan (μ)</h3>
+      </div>
+      <div class="step-content">
+        <p class="step-formula">μ = 1 / waktu pelayanan per pelayan</p>
+        <p class="step-calculation">μ = 1 / {{ "%.4f"|format(service) }}</p>
+        <p class="step-result">
+          <strong>μ = {{ "%.6f"|format(r["mu"]) }} pelanggan/menit</strong>
+        </p>
+      </div>
+    </div>
+
+    <!-- Langkah 3 -->
+    <div class="step-card">
+      <div class="step-header">
+        <h3>Langkah 3: Hitung Pemanfaatan Pelayanan untuk Dua Pelayan (ρ)</h3>
+      </div>
+      <div class="step-content">
+        <p class="step-formula">ρ = λ / (2μ)</p>
+        <p class="step-calculation">
+          ρ = {{ "%.6f"|format(r["lambda"]) }} / (2 × {{ "%.6f"|format(r["mu"])
+          }})
+        </p>
+        <p class="step-calculation">
+          ρ = {{ "%.6f"|format(r["lambda"]) }} / {{ "%.6f"|format(2.0 * r["mu"])
+          }}
+        </p>
+        <p class="step-result">
+          <strong>ρ = {{ "%.6f"|format(r["rho"]) }}</strong>
+          {% if r["rho"] < 1 %}
+          <span class="status-badge status-stable">✓ STABIL (ρ < 1)</span>
+          {% else %}
+          <span class="status-badge status-unstable"
+            >✗ TIDAK STABIL (ρ ≥ 1)</span
+          >
+          {% endif %}
+        </p>
+      </div>
+    </div>
+
+    <!-- Langkah 4 -->
+    <div class="step-card">
+      <div class="step-header">
+        <h3>Langkah 4: Hitung Waktu Total Rata-rata dalam Sistem (W)</h3>
+      </div>
+      <div class="step-content">
+        <p class="step-formula">W = 1 / (μ - λ/2)</p>
+        <p class="step-calculation">
+          W = 1 / ({{ "%.6f"|format(r["mu"]) }} - {{ "%.6f"|format(r["lambda"])
+          }}/2)
+        </p>
+        <p class="step-calculation">
+          W = 1 / ({{ "%.6f"|format(r["mu"]) }} - {{
+          "%.6f"|format(r["lambda"]/2) }})
+        </p>
+        <p class="step-calculation">
+          W = 1 / {{ "%.6f"|format(r["denominator_W"]) }}
+        </p>
+        <p class="step-result">
+          <strong>W = {{ "%.6f"|format(r["W"]) }} menit</strong>
+        </p>
+      </div>
+    </div>
+
+    <!-- Langkah 5 -->
+    <div class="step-card">
+      <div class="step-header">
+        <h3>Langkah 5: Hitung Waktu Rata-rata Tunggu dalam Antrian (Wq)</h3>
+      </div>
+      <div class="step-content">
+        <p class="step-formula">Wq = λ² / (2μ(μ - λ/2))</p>
+        <p class="step-calculation">
+          Wq = ({{ "%.6f"|format(r["lambda"]) }})² / (2 × {{
+          "%.6f"|format(r["mu"]) }} × ({{ "%.6f"|format(r["mu"]) }} - {{
+          "%.6f"|format(r["lambda"]) }}/2))
+        </p>
+        <p class="step-calculation">
+          Wq = {{ "%.6f"|format(r["lambda"]**2) }} / (2 × {{
+          "%.6f"|format(r["mu"]) }} × {{ "%.6f"|format(r["denominator_W"]) }})
+        </p>
+        <p class="step-calculation">
+          Wq = {{ "%.6f"|format(r["lambda"]**2) }} / {{
+          "%.6f"|format(r["denominator_Wq"]) }}
+        </p>
+        <p class="step-result">
+          <strong>Wq = {{ "%.6f"|format(r["Wq"]) }} menit</strong>
+        </p>
+      </div>
+    </div>
+
+    <!-- Langkah 6 -->
+    <div class="step-card">
+      <div class="step-header">
+        <h3>Langkah 6: Hitung Jumlah Pelanggan dalam Sistem (L)</h3>
+      </div>
+      <div class="step-content">
+        <p class="step-formula">L = λ × W</p>
+        <p class="step-calculation">
+          L = {{ "%.6f"|format(r["lambda"]) }} × {{ "%.6f"|format(r["W"]) }}
+        </p>
+        <p class="step-result">
+          <strong>L = {{ "%.6f"|format(r["L"]) }} pelanggan</strong>
+        </p>
+      </div>
+    </div>
+
+    <!-- Langkah 7 -->
+    <div class="step-card">
+      <div class="step-header">
+        <h3>Langkah 7: Hitung Jumlah Pelanggan dalam Antrian (Lq)</h3>
+      </div>
+      <div class="step-content">
+        <p class="step-formula">Lq = λ × Wq</p>
+        <p class="step-calculation">
+          Lq = {{ "%.6f"|format(r["lambda"]) }} × {{ "%.6f"|format(r["Wq"]) }}
+        </p>
+        <p class="step-result">
+          <strong>Lq = {{ "%.6f"|format(r["Lq"]) }} pelanggan</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Results Grid -->
+  <div class="results-grid">
+    <!-- Parameters Card -->
+    <div class="result-card parameter-card">
+      <h3>📈 Parameter Sistem</h3>
+      <table class="result-table">
+        <tr>
+          <td class="param-label">λ (Laju Kedatangan):</td>
+          <td class="param-value">
+            {{ "%.6f"|format(r["lambda"]) }} pelanggan/menit
+          </td>
+        </tr>
+        <tr>
+          <td class="param-label">μ (Laju Pelayanan):</td>
+          <td class="param-value">
+            {{ "%.6f"|format(r["mu"]) }} pelanggan/menit
+          </td>
+        </tr>
+        <tr class="highlight-row">
+          <td class="param-label">ρ (Utilisasi):</td>
+          <td class="param-value">{{ "%.6f"|format(r["rho"]) }}</td>
+        </tr>
+        <tr>
+          <td class="param-label">Status Stabilitas:</td>
+          <td class="param-value">
+            {% if r["rho"] < 1 %}
+            <span class="badge badge-success">✓ STABIL</span>
+            {% else %}
+            <span class="badge badge-danger">✗ TIDAK STABIL</span>
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Time Metrics Card -->
+    <div class="result-card time-card">
+      <h3>⏱️ Metrik Waktu Rata-rata</h3>
+      <table class="result-table">
+        <tr>
+          <td class="param-label">W (Waktu di Sistem):</td>
+          <td class="param-value">{{ "%.6f"|format(r["W"]) }} menit</td>
+        </tr>
+        <tr>
+          <td class="param-label">Wq (Waktu dalam Antrian):</td>
+          <td class="param-value">{{ "%.6f"|format(r["Wq"]) }} menit</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Customer Count Card -->
+    <div class="result-card count-card">
+      <h3>👥 Jumlah Pelanggan Rata-rata</h3>
+      <table class="result-table">
+        <tr>
+          <td class="param-label">L (dalam Sistem):</td>
+          <td class="param-value">{{ "%.6f"|format(r["L"]) }} pelanggan</td>
+        </tr>
+        <tr>
+          <td class="param-label">Lq (dalam Antrian):</td>
+          <td class="param-value">{{ "%.6f"|format(r["Lq"]) }} pelanggan</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Detailed Explanation -->
+  <div class="explanation-box">
+    <h3>📋 Penjelasan Hasil</h3>
+
+    <div class="explanation-item">
+      <h4>🔹 Parameter Sistem (λ, μ, ρ)</h4>
+      <p>
+        <strong>λ (Lambda)</strong> adalah laju kedatangan pelanggan (1/waktu
+        antar kedatangan).<br />
+        <strong>μ (Mu)</strong> adalah laju layanan per server (1/waktu
+        layanan).<br />
+        <strong>ρ (Rho)</strong> adalah tingkat utilisasi sistem, dihitung
+        sebagai λ/(2μ). Jika ρ < 1, sistem stabil dan akan mencapai keadaan
+        steady-state.
+      </p>
+    </div>
+
+    <div class="explanation-item">
+      <h4>🔹 Waktu Rata-rata (W dan Wq)</h4>
+      <p>
+        <strong>W</strong> adalah waktu rata-rata yang dihabiskan pelanggan di
+        sistem (dari saat tiba hingga selesai dilayani).<br />
+        <strong>Wq</strong> adalah waktu rata-rata pelanggan menunggu dalam
+        antrian sebelum dilayani (tidak termasuk waktu layanan).
+      </p>
+    </div>
+
+    <div class="explanation-item">
+      <h4>🔹 Jumlah Pelanggan (L dan Lq)</h4>
+      <p>
+        <strong>L</strong> adalah jumlah rata-rata pelanggan di sistem pada
+        waktu tertentu (L = λ × W).<br />
+        <strong>Lq</strong> adalah jumlah rata-rata pelanggan dalam antrian (Lq
+        = λ × Wq).
+      </p>
+    </div>
+
+    <div class="explanation-item" style="background-color: #f0f8ff">
+      <h4>🔹 Interpretasi Stabilitas</h4>
+      {% if r["rho"] < 1 %}
+      <p style="color: #28a745">
+        <strong>✓ Sistem STABIL</strong><br />
+        Karena ρ = {{ "%.4f"|format(r["rho"]) }} < 1, sistem akan mencapai
+        kondisi seimbang dan antrian tidak akan tumbuh tanpa batas. Kapasitas
+        layanan dua server cukup untuk melayani pelanggan yang datang.
+      </p>
+      {% else %}
+      <p style="color: #dc3545">
+        <strong>✗ Sistem TIDAK STABIL</strong><br />
+        Karena ρ = {{ "%.4f"|format(r["rho"]) }} ≥ 1, sistem tidak akan stabil.
+        Antrian akan terus bertambah tanpa batas. Perlu peningkatan kapasitas
+        layanan atau pengurangan laju kedatangan.
+      </p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="button-group">
+    <a href="{{ url_for('index') }}" class="btn btn-primary"
+      >← Kembali ke Input</a
+    >
+    <button onclick="window.print()" class="btn btn-secondary">
+      🖨️ Cetak Hasil
+    </button>
+  </div>
+</div>
+
+<style>
+  .result-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .input-summary {
+    background-color: #e8f4f8;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .label {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .value {
+    font-family: "Courier New", monospace;
+    color: #0066cc;
+    font-weight: 500;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .result-card {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    background-color: #fafafa;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .result-card h3 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 2px solid #0066cc;
+    padding-bottom: 0.5rem;
+  }
+
+  .parameter-card {
+    border-left: 4px solid #28a745;
+  }
+
+  .time-card {
+    border-left: 4px solid #ff9800;
+  }
+
+  .count-card {
+    border-left: 4px solid #2196f3;
+  }
+
+  .result-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .result-table tr {
+    border-bottom: 1px solid #eee;
+  }
+
+  .result-table tr.highlight-row {
+    background-color: #fffacd;
+  }
+
+  .param-label {
+    font-weight: 600;
+    text-align: left;
+    padding: 0.75rem 0.5rem;
+    width: 60%;
+  }
+
+  .param-value {
+    text-align: right;
+    padding: 0.75rem 0.5rem;
+    font-family: "Courier New", monospace;
+    color: #0066cc;
+    font-weight: 500;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+
+  .badge-success {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .badge-danger {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .explanation-box {
+    background-color: #f9f9f9;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .explanation-box h3 {
+    color: #333;
+    margin-top: 0;
+  }
+
+  .explanation-item {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border-left: 4px solid #0066cc;
+    background-color: white;
+    border-radius: 4px;
+  }
+
+  .explanation-item h4 {
+    margin-top: 0;
+    color: #0066cc;
+  }
+
+  .explanation-item p {
+    margin: 0;
+    line-height: 1.6;
+    color: #555;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  @media print {
+    .button-group {
+      display: none;
+    }
+
+    .result-card {
+      page-break-inside: avoid;
+    }
+  }
+</style>
+{% endblock %}

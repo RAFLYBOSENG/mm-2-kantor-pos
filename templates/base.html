@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>M/M/2 Queuing Model Calculator</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=AM_HTMLorMML-full"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>M/M/2 Queuing Theory Calculator</h1>
+        <p class="subtitle">
+          Two-Server Queuing Model | Pemodelan dan Simulasi
+        </p>
+      </header>
+
+      <main>
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <div class="messages-container">
+          {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <span class="message-text">{{ message }}</span>
+            <button
+              type="button"
+              class="close-btn"
+              onclick="this.parentElement.style.display='none';"
+            >
+              &times;
+            </button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+
+        <!-- Main Content -->
+        {% block content %}{% endblock %}
+      </main>
+
+      <footer>
+        <p>
+          &copy; 2026 Queuing Theory Calculator | Tugas Pemodelan dan Simulasi
+          Semester 5
+        </p>
+      </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  </body>
+</html>
