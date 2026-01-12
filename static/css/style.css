@@ -178,7 +178,7 @@ main {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
-    background-color: #f0f8ff;
+    !-background-color: #f0f8ff;
 }
 
 .form-text {
@@ -276,7 +276,7 @@ main {
 .formula-item {
     margin-bottom: 1.5rem;
     padding: 1rem;
-    background-color: #f9f9f9;
+    background-color: #000000;
     border-radius: 6px;
     border-left: 3px solid var(--info-color);
 }
@@ -310,7 +310,7 @@ table td {
 }
 
 table tr:hover {
-    background-color: #f9f9f9;
+    background-color: #2b2a2a;
 }
 
 /* ==================== FOOTER ==================== */
@@ -420,7 +420,7 @@ footer p {
 
 /* ==================== STEPS/CALCULATION DISPLAY ==================== */
 .steps-container {
-    background: white;
+    background: rgb(39, 35, 35);
     padding: 2rem;
     margin-bottom: 2rem;
     border-radius: 12px;
@@ -436,7 +436,7 @@ footer p {
 }
 
 .step-card {
-    background: #f9f9f9;
+    background: #18203d;
     border-left: 5px solid var(--primary-color);
     border-radius: 8px;
     margin-bottom: 1.5rem;
@@ -489,7 +489,7 @@ footer p {
     margin: 0.5rem 0;
     border-radius: 4px;
     border-left: 3px solid #ff9800;
-    color: #333;
+    color: #000000;
     font-size: 0.95rem;
     line-height: 1.4;
 }
